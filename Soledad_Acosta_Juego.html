@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soledad Acosta - Juego de Inglés</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f2f4f8;margin:0;padding:20px}
+.game{max-width:800px;margin:auto;background:white;padding:25px;border-radius:18px;box-shadow:0 4px 18px #0002}
+h1{text-align:center}
+.progress{font-weight:bold;margin:12px 0}
+.text{line-height:1.8;background:#f8f8f8;padding:18px;border-radius:12px}
+.options button{display:block;width:100%;padding:13px;margin:9px 0;border:2px solid #ddd;border-radius:10px;background:white;text-align:left;font-size:16px;cursor:pointer}
+.options button:hover{background:#eef3ff}
+.correct{background:#d9f7df!important;border-color:#36a85b!important}
+.wrong{background:#ffdcdc!important;border-color:#d33!important}
+#next,#restart{padding:12px 22px;border:0;border-radius:10px;background:#222;color:white;cursor:pointer;margin-top:10px}
+#next{display:none}
+#result{text-align:center;display:none}
+</style>
+</head>
+<body>
+<div class="game">
+<h1>📚 Soledad Acosta — Completa el texto</h1>
+<div id="quiz">
+<div class="progress" id="progress"></div>
+<div class="text" id="fulltext"></div>
+<div style="margin-top:18px"><strong>Pregunta actual:</strong></div>
+<div class="text" id="question"></div>
+<div class="options" id="options"></div>
+<button id="next">Siguiente ➜</button>
+</div>
+<div id="result"></div>
+</div>
+<script>
+const qs=[
+["125","Besides having more than 45 particularly recognized ____ novels, Mrs. Acosta also translated essays from French.",
+["A. ancient","B. permanent","C. elderly","D. historical"],"D"],
+["126","____ she created fiction, she frequently included scientific knowledge.",
+["A. Since","B. Although","C. Unless","D. Whether"],"B"],
+["127","For example, an account of spices like ____ can be studied in “Conversations and Readings.”",
+["A. flour","B. lamb","C. peanut","D. vanilla"],"D"],
+["128","Soledad also reported on the importance of ____ control for corn crops in the Andes.",
+["A. season","B. forecast","C. centigrade","D. climate"],"D"],
+["129","In order for this knowledge to reach a bigger audience, she had her documents ____ published as articles.",
+["A. widely","B. hardly","C. approximately","D. nearly"],"A"],
+["130","She'd introduced plenty of female scientists to ____ new readers.",
+["A. suggest","B. attract","C. recommend","D. promise"],"B"],
+["131","She argued that if female authors weren't ____ with an education, their achievements would be limited.",
+["A. given","B. received","C. provided","D. remained"],"C"],
+["132","Soledad was ____ to prove the sexes were equal.",
+["A. accurate","B. determined","C. alright","D. proper"],"B"],
+["133","Soledad Acosta went ____ publishing until her death.",
+["A. away","B. on","C. back","D. up"],"B"],
+["134","You ____ to check her novels out!",
+["A. might","B. used","C. rather","D. ought"],"D"]
+];
+let i=0,score=0,answered=false;
+const q=document.getElementById("question"), opts=document.getElementById("options"), prog=document.getElementById("progress"), next=document.getElementById("next");
+function buildFullText(){
+ const blanks={};
+ qs.forEach(x=>blanks[x[0]]=`<strong>[${x[0]}]</strong>`);
+ return `Born in Bogotá, Soledad Acosta de Samper was one of the most <strong>(0) talented</strong> South American authors of the 19th century. Besides having more than 45 particularly recognized ${blanks["125"]} novels, Mrs. Acosta also translated essays from French.<br><br>
+${blanks["126"]} she created fiction, she frequently included scientific knowledge. For example, an account of spices like ${blanks["127"]} can be studied in “Conversations and Readings.” Soledad also reported on the ${blanks["128"]} of climate control for corn crops in the Andes. In order for this knowledge to reach a bigger audience, she had her documents ${blanks["129"]} published as articles.<br><br>
+In addition, by 1878, she'd created a review magazine managed by women, and she'd introduced plenty of female scientists to ${blanks["130"]} new readers. She argued that if female authors weren't ${blanks["131"]} with an education, their achievements would be limited. Soledad was ${blanks["132"]} to prove the sexes were equal.<br><br>
+Soledad Acosta went ${blanks["133"]} publishing until her death. You ${blanks["134"]} to check her novels out!`;
+}
+function load(){
+ answered=false; next.style.display="none";
+ prog.textContent=`Pregunta ${i+1} de ${qs.length} — ${qs[i][0]}`;
+ document.getElementById("fulltext").innerHTML=buildFullText();
+ q.textContent=qs[i][1]; opts.innerHTML="";
+ qs[i][2].forEach(x=>{
+   const b=document.createElement("button"); b.textContent=x;
+   b.onclick=()=>answer(b,x[0]);
+   opts.appendChild(b);
+ });
+}
+function answer(b,letter){
+ if(answered)return; answered=true;
+ document.querySelectorAll(".options button").forEach(x=>x.disabled=true);
+ if(letter===qs[i][3]){score++;b.classList.add("correct")}else{
+   b.classList.add("wrong");
+   [...document.querySelectorAll(".options button")].find(x=>x.textContent.startsWith(qs[i][3])).classList.add("correct");
+ }
+ next.style.display="inline-block";
+}
+next.onclick=()=>{i++; if(i<qs.length)load();else finish()};
+function finish(){
+ document.getElementById("quiz").style.display="none";
+ const r=document.getElementById("result");r.style.display="block";
+ const pct=score*10;
+ r.innerHTML=`<h2>🎉 Resultado</h2><h1>${score}/10</h1><p>Obtuviste ${pct}%.</p><p>${pct>=80?"¡Excelente trabajo!":"Repasa las respuestas y vuelve a intentarlo."}</p><button id="restart" onclick="location.reload()">🔄 Jugar otra vez</button>`;
+}
+load();
+</script>
+</body>
+</html>
